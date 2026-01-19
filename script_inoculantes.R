@@ -11,6 +11,14 @@ B4 <- c("T8","T7","T1","T3","T4","T6","T2","T5")
 BCA <- data.frame(
         Bloques = rep(paste0("B", 1:4), each = 8),
         plot = 1:32,
-        treatment = c(B1, B2, B3, B4)
+        tratamiento = c(B1, B2, B3, B4)
 )
 print(BCA)
+
+#Conectando los marcos de datos o variables
+Var_Crecimiento <- read_excel("Datos/Var_Crecimiento.xlsx")
+Var_Productivas <- read_excel("Datos/Var_Productivas.xlsx")
+Var_Rendimiento <- read_excel("Datos/Var_Rendimiento.xlsx")
+
+
+
