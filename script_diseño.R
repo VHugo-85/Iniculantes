@@ -15,10 +15,5 @@ BCA <- data.frame(
 )
 print(BCA)
 
-#Conectando los marcos de datos o variables
-Var_Crecimiento <- read_excel("Datos/Var_Crecimiento.xlsx")
-Var_Productivas <- read_excel("Datos/Var_Productivas.xlsx")
-Var_Rendimiento <- read_excel("Datos/Var_Rendimiento.xlsx")
-
 
 
