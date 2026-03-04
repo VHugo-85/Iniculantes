@@ -1,15 +1,8 @@
 #Llamando a las librerias
-install.packages("ggpubr")
-install.packages("agricolae")
-install.packages("ggpubr")
-library(dplyr)
-library(car)
-library(agricolae)
-library(broom)
-library(ggplot2)
-library(readr)
-library(ggpubr)
-library(stringr)
+library (c("dplyr", "car", "agricolae", "broom", "ggplot2",
+          "readr", "ggpubr", "stringr", "tibble", "gridExtra", 
+          "ggplotify", "grid", "gtable", "patchwork", "kablefont", "cowplot"))
+
 
 #Leyendo los datos
 var_crecimiento <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Crecimiento.csv")
@@ -24,7 +17,7 @@ modelo_alt <- aov(Altura ~ Tratamientos + Bloques, data = var_crecimiento)
 anova_alt <- anova(modelo_alt)
 sw_test_alt <- shapiro.test(residuals(modelo_alt))
 lev_test_alt <- leveneTest(Altura ~ Tratamientos, data = var_crecimiento)
-HSDTukey_test_alt <- HSD.test(modelo_alt, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
+LSD_alt <- LSD.test(modelo_alt, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
 qqnorm(Altura)
 res_alt <- residuals(modelo_alt)
 Pred_alt <- predict(modelo_alt)
@@ -38,7 +31,7 @@ modelo_hoj <- aov(Numero_de_hojas ~ Tratamientos + Bloques, data = var_crecimien
 anova_hoj <- anova(modelo_hoj)
 sw_test_hoj <- shapiro.test(residuals(modelo_hoj))
 lev_test_hoj <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimiento)
-HSDTukey_test_hoj <- HSD.test(modelo_hoj, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
+LSD_hoj <- LSD.test(modelo_hoj, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
 qqnorm(Numero_de_hojas)
 res_hoj <- residuals(modelo_hoj)
 Pred_hoj <- predict(modelo_hoj)
@@ -52,7 +45,7 @@ modelo_diam <- aov(Diametro ~ Tratamientos + Bloques, data = var_crecimiento)
 anova_diam <- anova(modelo_diam)
 sw_test_diam <- shapiro.test(residuals(modelo_hoj))
 lev_test_diam <- leveneTest(Diametro ~ Tratamientos, data = var_crecimiento)
-HSDTukey_test_diam <- HSD.test(modelo_diam, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
+LSD_diam <- LSD.test(modelo_diam, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
 qqnorm(Diametro)
 res_diam <- residuals(modelo_diam)
 Pred_diam <- predict(modelo_diam)
@@ -72,10 +65,10 @@ r2_diam <- round((anova_diam$'Sum Sq'[1]+anova_diam$'Sum Sq'[2]) / sum(anova_dia
 
 
 #Construyendo un marco de datos
-trt <- c(rownames(HSDTukey_test_diam$groups))
-letra_alt <- c(HSDTukey_test_alt$groups)
-letra_hoj <- c(HSDTukey_test_hoj$groups)
-letra_diam <- c(HSDTukey_test_diam$groups)
+trt <- c(rownames(LSD_diam$groups))
+letra_alt <- c(LSD_alt$groups)
+letra_hoj <- c(LSD_hoj$groups)
+letra_diam <- c(LSD_diam$groups)
 df <- data.frame(trt, letra_alt, letra_diam, letra_hoj)
 df_stad <- data.frame(cv_alt,
                       cv_diam,
@@ -90,13 +83,6 @@ df_stad <- data.frame(cv_alt,
 
 
 #Graficando los datos
-library(ggplot2)
-library(stringr)
-install.packages("extrafont")
-library(extrafont)
-font_import(pattern = "Arial", prompt = FALSE)
-fonts()
-
 etiq_zz <- function(x) {
         ifelse(seq_along(x) %% 2 == 1,
                paste0(x, "\n"),
@@ -105,6 +91,11 @@ etiq_zz <- function(x) {
 
 
 graf_alt <- ggplot(data = df) +
+        theme_classic() +
+        theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_rect(fill = "white", colour = NA))+
         geom_col(aes(x = trt, y = Altura),
                  fill = "#808080", width = 0.5) +
         geom_text(aes(x = trt, y = Altura, label = groups),
@@ -115,17 +106,13 @@ graf_alt <- ggplot(data = df) +
         theme_minimal(base_size = 11) +
         theme(axis.text.x = element_text(size = 11, face = "bold"),
               axis.text.y = element_text(size = 11, face = "bold"))+
-        labs(x = "Tratamientos", y = "Altura") +
+        labs(x = "", y = "Altura") +
         theme_minimal(base_size = 10) +
         theme(axis.text.x  = element_text(size = 10, face = "bold"),
                 axis.text.y  = element_text(size = 10, face = "bold"),
                 axis.title.x = element_text(face = "bold"),
-                axis.title.y = element_text(face = "bold"))+
-        annotate("text", x = "Testigo", y = 75, label = "Levene = 0.6581")+
-        annotate("text", x = "Testigo", y = 80, label = "ShapWilk = 0.5020")+
-        annotate("text", x = "Testigo", y = 85, label = "CV = 23%")+
-        annotate("text", x = "Testigo", y = 90, label = expression(R^2 == 0.61))+
-        annotate("text", x = "Testigo", y = 95, label = "pvalor = 0.0382")
+                axis.title.y = element_text(face = "bold"))
+        
 print(graf_alt)
 
 graf_hoj <- ggplot(data = df) +
@@ -141,17 +128,13 @@ graf_hoj <- ggplot(data = df) +
         theme_minimal(base_size = 11) +
         theme(axis.text.x = element_text(size = 11, face = "bold"),
               axis.text.y = element_text(size = 11, face = "bold"))+
-        labs(x = "Tratamientos", y = "Numero de hojas") +
+        labs(x = "Tratamientos", y = "Número de hojas") +
         theme_minimal(base_size = 10) +
         theme(axis.text.x  = element_text(size = 10, face = "bold"),
               axis.text.y  = element_text(size = 10, face = "bold"),
               axis.title.x = element_text(face = "bold"),
-              axis.title.y = element_text(face = "bold"))+
-        annotate("text", x = "Testigo", y = 15, label = "Levene = 0.7320")+
-        annotate("text", x = "Testigo", y = 16, label = "ShapWilk = 0.3190")+
-        annotate("text", x = "Testigo", y = 17, label = "CV = 16%")+
-        annotate("text", x = "Testigo", y = 18, label = expression(R^2 == 0.65))+
-        annotate("text", x = "Testigo", y = 19, label = "pvalor = 0.0034")
+              axis.title.y = element_text(face = "bold"))
+       
 print(graf_hoj)       
 
 graf_diam <- ggplot(data = df) +
@@ -173,18 +156,128 @@ graf_diam <- ggplot(data = df) +
         theme(axis.text.x  = element_text(size = 10, face = "bold"),
               axis.text.y  = element_text(size = 10, face = "bold"),
               axis.title.x = element_text(face = "bold"),
-              axis.title.y = element_text(face = "bold"))+
-        annotate("text", x = "Testigo", y = 6.0, label = "Levene = 0.4073")+
-        annotate("text", x = "Testigo", y = 5.7, label = "ShapWilk = 0.3188")+
-        annotate("text", x = "Testigo", y = 5.4, label = "CV = 9.5%")+
-        annotate("text", x = "Testigo", y = 5.1, label = expression(R^2 == 0.74))+
-        annotate("text", x = "Testigo", y = 4.8, label = "pvalor = 0.0041")
+              axis.title.y = element_text(face = "bold"))
+        
 print(graf_diam)
+
 #Convierte el data frame llamado "Supuestos_y_estadisticos" a una tabla en formato apa
 
-graf_crecimiento <- ggarrange(graf_alt, graf_hoj, graf_diam, 
-                              ncol = 2, nrow = 2, common_by())
-print(graf_crecimiento)
+# 1) Preparar la tabla
+
+tabla_ap <- Supuestos_y_estadisticos %>%
+        mutate(across((ncol(.)-2):ncol(.), ~ sprintf("%.4f", as.numeric(.))))
+
+# 2) Tema de tabla estilo APA (líneas horizontales mínimas)
+tt <- ttheme_minimal(
+        core = list(
+                fg_params = list(fontfamily = "Arial", fontsize = 10),
+                padding   = unit.c(unit(6, "pt"), unit(6, "pt"))
+        ),
+        colhead = list(
+                fg_params = list(fontfamily = "Arial", fontsize = 10, fontface = "bold"),
+                padding   = unit.c(unit(6, "pt"), unit(6, "pt"))
+        )
+)
+
+tbl_grob <- tableGrob(tabla_ap, rows = NULL, theme = tt)
+
+# (Opcional) agregar una línea horizontal extra bajo el encabezado:
+
+# --- 1. Crear tu tabla base (sin líneas)
+tbl_grob <- tableGrob(
+        tabla_ap,              # <- tu data frame ya formateado
+        rows = NULL,
+        theme = ttheme_minimal(
+                core = list(
+                        fg_params = list(fontfamily = "Arial", fontsize = 10),
+                        padding   = unit(c(6, 6), "pt")
+                ),
+                colhead = list(
+                        fg_params = list(fontfamily = "Arial", fontsize = 10, fontface = "bold"),
+                        padding   = unit(c(6, 6), "pt")
+                )
+        )
+)
+
+# --- 2. Agregar línea superior al encabezado
+tbl_grob <- gtable_add_grob(
+        tbl_grob,
+        grobs = segmentsGrob(x0 = unit(0, "npc"), x1 = unit(1, "npc"),
+                             y0 = unit(1, "npc"), y1 = unit(1, "npc")),
+        t = 1, l = 1, r = ncol(tbl_grob)
+)
+
+# --- 3. Agregar línea inferior al encabezado (fila 1)
+tbl_grob <- gtable::gtable_add_grob(
+        tbl_grob,
+        grobs = segmentsGrob(x0 = unit(0, "npc"), x1 = unit(1, "npc"),
+                             y0 = unit(0, "npc"), y1 = unit(0, "npc")),
+        t = 1, b = 1, l = 1, r = ncol(tbl_grob), z = Inf
+)
+
+
+# --- 4. Agregar línea inferior a la última fila
+last_row <- nrow(tbl_grob)
+tbl_grob <- gtable_add_grob(
+        tbl_grob,
+        grobs = segmentsGrob(x0 = unit(0, "npc"), x1 = unit(1, "npc"),
+                             y0 = unit(0, "npc"), y1 = unit(0, "npc")),
+        t = last_row, l = 1, r = ncol(tbl_grob)
+)
+
+# --- 5. Crear TÍTULO como grob estilo APA
+titulo <- textGrob(
+        "Parámetros y supuestos estadísticos",
+        gp = gpar(fontface = "bold", fontsize = 12, fontfamily = "Arial")
+)
+
+# --- 6. Unir título + tabla
+tabla_con_titulo <- arrangeGrob(
+        titulo,
+        tbl_grob,
+        ncol = 1,
+        heights = unit.c(unit(1.5, "lines"), unit(1, "null"))
+)
+
+# --- 7. Convertir en ggplot para usar en patchwork
+gg_tab <- as.ggplot(tabla_con_titulo)
+gg_tab
+
+# 3) Convertir a “ggplot” para patchwork
+
+graf_final <-
+        (graf_alt + graf_hoj + graf_diam + wrap_elements(gg_tab)) +
+        plot_layout(ncol = 2, nrow = 2) &
+        theme_classic() &
+        theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_rect(fill = "white", colour = NA),
+                plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")
+        )
+
+#Nota al pie
+graf_final <- graf_final + plot_annotation(
+        caption = "NOTA: Barras con letras diferentes corresponden a tratamientos estadísticamente distintos según la prueba LSD de Fisher (α = 0.05).",
+        theme = theme(
+                plot.caption = element_text(size = 10, hjust = 0),  # hjust=0 = izquierda
+                plot.margin  = margin(t = 1, r = 2, b = 2, l = 2),
+                plot_annotation(theme = theme(plot.margin = margin(4, 4, 4, 4))) # margen externo# margen exterior opcional
+        )
+)
+
+graf_final
+
+
+ggsave(
+        filename = "graf_var_crec.png",
+        plot     = graf_final,
+        width    = 12,          
+        height   = 8,          
+        units    = "in",
+        dpi      = 300,        
+        device   = "png"
+)
 
 
 
