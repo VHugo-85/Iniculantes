@@ -1,0 +1,130 @@
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(patchwork)
+
+tasa_cambio <- 36.62 
+
+df_final <- data.frame(
+        Tratamiento = c("Testigo", "Micorriza", "T. harzianum", "Rhizobium", 
+                        "Mico+Tricho", "Mico+Rhizo", "Rhizo+Tricho", "Mico+Rhizo+Tricho"),
+        # Conversión a USD
+        Costos = c(0, 519, 730, 949, 1249, 1468, 1679, 2198) / tasa_cambio,
+        IngresoNeto = c(7507, 49866, 25554, 45245, 48179, 45837, 50642, 45591) / tasa_cambio,
+        Dominancia = c("ND", "ND", "D", "D", "D", "D", "ND", "D")
+)
+
+# 3. Crear el gráfico corregido
+graf_dom <- ggplot(df_final, aes(x = Costos, y = IngresoNeto)) +
+        # Línea de frontera conectando solo los No Dominados (ND)
+        geom_line(data = subset(df_final, Dominancia == "ND"), 
+                  aes(group = 1), color = "#2E86C1", size = 1) +
+        # Puntos con formas distintas para daltónicos y mejor visibilidad
+        geom_point(aes(color = Dominancia, shape = Dominancia), size = 4) +
+        geom_point(data = subset(df_final, Tratamiento == "Micorriza"), size = 8, shape = 1, color = "blue", stroke = 2)+
+        # Etiquetas corregidas para evitar traslapes (usando nudge y check_overlap)
+        geom_text(aes(label = Tratamiento), 
+                  vjust = -1, hjust = 0.5, size = 3, fontface = "bold", 
+                  check_overlap = FALSE, nudge_y = 50) +
+        # Escalas y colores
+        scale_color_manual(values = c("D" = "#E74C3C", "ND" = "#2E86C1"), 
+                           labels = c("D" = "Dominado", "ND" = "No Dominado")) +
+        scale_shape_manual(values = c("D" = 16, "ND" = 17),
+                           labels = c("D" = "Dominado", "ND" = "No Dominado")) +
+        # AJUSTE CRÍTICO DE EJES PARA USD
+        scale_y_continuous(labels = dollar_format(), limits = c(0, 1600)) + 
+        scale_x_continuous(labels = dollar_format(), limits = c(0, 70)) +
+        # Etiquetas de ejes con formato matemático
+        labs(
+                x = expression(bold("Costos Variables (USD" %.% ha^-1 * ")")),
+                y = expression(bold("Ingreso Neto (USD" %.% ha^-1 * ")")),
+                color = "Estado", 
+                shape = "Estado"
+        ) +
+        theme_light() +
+        theme(
+                axis.title = element_text(size = 12),
+                plot.title = element_text(hjust = 0.5, face = "bold"),
+                plot.subtitle = element_text(hjust = 0.5)
+        ) +
+        theme_light() +
+        theme(legend.position = "bottom",
+              panel.grid.minor = element_blank())
+print(graf_dom)
+ggsave("Graf_Dominancia.png", plot = graf_dom, width = 8, height = 6, dpi = 300)
+
+#TRM para cada tratamiento
+
+# 2. Datos (basados en tu Cuadro 7)
+df_trm_puntos <- data.frame(
+        Tratamiento = c("Micorriza", "Rhizo+Trich"),
+        TRM_porcentaje = c(8162, 67)
+)
+
+# 3. Crear el gráfico de puntos creativo
+graf_trm <- ggplot(df_trm_puntos, aes(x = TRM_porcentaje, y = reorder(Tratamiento, TRM_porcentaje))) +
+        
+        # Línea horizontal tenue que conecta el 0 con el punto (efecto "piruleta")
+        geom_segment(aes(x = 0, xend = TRM_porcentaje, yend = reorder(Tratamiento, TRM_porcentaje)), 
+                     color = "grey80", size = 0.5) +
+        
+        # Línea de umbral del 100% (tasa mínima aceptable)
+        geom_vline(xintercept = 100, linetype = "dashed", color = "red", size = 0.8) +
+        annotate("text", x = 300, y = 0.6, label = "Mínimo aceptable (100%)", color = "red", size = 3, hjust = 0) +
+        
+        # --- CAPA DE RESALTADO (Círculo Azul) ---
+        # Superponemos un círculo azul grande y hueco solo para Micorriza
+        geom_point(data = subset(df_trm_puntos, Tratamiento == "Micorriza"),
+                   size = 12, shape = 1, color = "red", stroke = 2) +
+        
+        # Puntos principales con el color azul de la frontera
+        geom_point(color = "black", size = 5) +
+        
+        # Etiquetas de porcentaje sobre los puntos
+        geom_text(aes(label = paste0(TRM_porcentaje, "%")), 
+                  vjust = -1.5, fontface = "bold", size = 4) +
+        
+        # Escalas y etiquetas profesionales
+        scale_x_continuous(limits = c(0, 9500), breaks = seq(0, 9000, 2000), 
+                           labels = scales::comma_format(suffix = "%")) +
+        
+        labs(title = "",
+             subtitle = "",
+             x = expression("TRM (%)"),
+             y = "Tratamientos No Dominados") +
+        
+        theme_minimal() +
+        theme(plot.title = element_text(face = "bold", size = 14),
+              axis.title = element_text(face = "bold"),
+              panel.grid.major.y = element_blank(), # Limpia las líneas horizontales de fondo
+              axis.text.y = element_text(face = "bold"))
+print(graf_trm)
+
+ggsave("Graf_TRM.png", plot = graf_trm, width = 8, height = 4, dpi = 300)
+
+graf_economic <-
+        (graf_dom + graf_trm) +
+        plot_layout(ncol = 1, nrow = 2) &
+        theme_classic() &
+        theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_rect(fill = "white", colour = NA),
+                plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")
+        )
+
+#Nota al pie
+graf_final <- graf_economic + plot_annotation(
+        caption = "NOTA:       Mico+Tricho: Micorriza+T. harzianum, 
+                 Mico+Rhizo: Micorriza+Rhizobium, 
+                 Rhizo+Tricho: Rhizobium+T. harzianum, 
+                Mico+Rhizo+Tricho: Micorriza+Rhizobium+T. harzianum.",
+        theme = theme(
+                plot.caption = element_text(size = 10, hjust = 0),  # hjust=0 = izquierda
+                plot.margin  = margin(t = 1, r = 2, b = 2, l = 2),
+                plot_annotation(theme = theme(plot.margin = margin(4, 4, 4, 4))) # margen externo# margen exterior opcional
+        )
+)
+graf_economic
+graf_final
+ggsave("graf_economic.png", graf_final, width = 10, height = 12, dpi = 300)

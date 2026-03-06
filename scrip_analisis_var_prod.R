@@ -1,86 +1,98 @@
 #Llamando a las librerias
 library (c("dplyr", "car", "agricolae", "broom", "ggplot2",
-          "readr", "ggpubr", "stringr", "tibble", "gridExtra", 
-          "ggplotify", "grid", "gtable", "patchwork", "kablefont", "cowplot"))
-
+           "readr", "ggpubr", "stringr", "tibble", "gridExtra", 
+           "ggplotify", "grid", "gtable", "patchwork", "kablefont", "cowplot", "car"))
+library(car)
+library(performance)
+library(agricolae)
+library(ggplot2)
+library(stringr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(gtable)
 
 #Leyendo los datos
-var_crecimiento <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Crecimiento.csv")
+var_prod <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Productivas.csv")
 
 
-var_crecimiento$Tratamientos <- as.factor(var_crecimiento$Tratamientos)
-var_crecimiento$Bloques <- as.factor(var_crecimiento$Bloques)
+var_prod$Tratamiento <- as.factor(var_prod$Tratamiento)
+var_prod$Bloques <- as.factor(var_prod$Bloques)
 
-#Andeva, diagnostico y parametros del modelo para la variable altura
+#Andeva, diagnostico y parametros del modelo para la variable Numero de vainas
 
-modelo_alt <- aov(Altura ~ Tratamientos + Bloques, data = var_crecimiento)
-anova_alt <- anova(modelo_alt)
-sw_test_alt <- shapiro.test(residuals(modelo_alt))
-lev_test_alt <- leveneTest(Altura ~ Tratamientos, data = var_crecimiento)
-LSD_alt <- LSD.test(modelo_alt, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
-qqnorm(Altura)
-res_alt <- residuals(modelo_alt)
-Pred_alt <- predict(modelo_alt)
-df_res_vs_pr_alt <- data.frame(Pred_alt, res_alt)
-scatterplotMatrix(df_res_vs_pr_alt)
-scatterplot(Pred_alt, res_alt)
+modelo_sqrt_vainas <- aov(sqrt(Vainas_por_planta) ~ Tratamiento + Bloques, data = var_prod)
+anova_sqrt_vainas <- anova(modelo_sqrt_vainas)
+sw_test_sqrt_vainas <- shapiro.test(residuals(modelo_sqrt_vainas))
+lev_test_sqrt_vainas <- leveneTest(sqrt(Vainas_por_planta) ~ Tratamiento, data = var_prod)
+LSD_vainas <- LSD.test(modelo_sqrt_vainas, trt = "Tratamiento", group = TRUE, alpha = 0.05)        
+qqnorm(sqrt(var_prod$Vainas_por_planta))
+res_vainas <- residuals(modelo_sqrt_vainas)
+Pred_vainas <- predict(modelo_sqrt_vainas)
+df_res_vs_pr_vainas <- data.frame(Pred_vainas, res_vainas)
+scatterplotMatrix(df_res_vs_pr_vainas)
+scatterplot(Pred_vainas, res_vainas)
 
-#Andeva, diagnostico y parametros del modelo para la variable Numero de hojas
+#Andeva, diagnostico y parametros del modelo para la variable Numero de granos por planta
 
-modelo_hoj <- aov(Numero_de_hojas ~ Tratamientos + Bloques, data = var_crecimiento)
-anova_hoj <- anova(modelo_hoj)
-sw_test_hoj <- shapiro.test(residuals(modelo_hoj))
-lev_test_hoj <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimiento)
-LSD_hoj <- LSD.test(modelo_hoj, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
-qqnorm(Numero_de_hojas)
-res_hoj <- residuals(modelo_hoj)
-Pred_hoj <- predict(modelo_hoj)
-df_res_vs_pr_hoj <- data.frame(Pred_hoj, res_hoj)
-scatterplotMatrix(df_res_vs_pr_hoj)
-scatterplot(Pred_alt, res_hoj)
+modelo_granos <- aov(Granos_por_planta ~ Tratamiento + Bloques, data = var_prod)
+anova_granos <- anova(modelo_granos)
+sw_test_granos <- shapiro.test(residuals(modelo_granos))
+lev_test_granos <- leveneTest(log(Granos_por_planta) ~ Tratamiento, data = var_prod)
+LSD_granos <- LSD.test(modelo_granos, trt = "Tratamiento", group = TRUE, alpha = 0.05)        
+qqnorm(var_prod$Granos_por_planta)
+res_granos <- residuals(modelo_granos)
+Pred_granos <- predict(modelo_granos)
+df_res_vs_pr_granos <- data.frame(Pred_granos, res_granos)
+scatterplotMatrix(df_res_vs_pr_granos)
+scatterplot(Pred_granos, res_granos)
 
-#Andeva, diagnostico y parametros del modelo para la variable Diametro del tallo
+#Andeva, diagnostico y parametros del modelo para la variable Rendimiento
 
-modelo_diam <- aov(Diametro ~ Tratamientos + Bloques, data = var_crecimiento)
-anova_diam <- anova(modelo_diam)
-sw_test_diam <- shapiro.test(residuals(modelo_hoj))
-lev_test_diam <- leveneTest(Diametro ~ Tratamientos, data = var_crecimiento)
-LSD_diam <- LSD.test(modelo_diam, trt = "Tratamientos", group = TRUE, alpha = 0.05)        
-qqnorm(Diametro)
-res_diam <- residuals(modelo_diam)
-Pred_diam <- predict(modelo_diam)
-df_res_vs_pr_diam <- data.frame(Pred_diam, res_diam)
-scatterplotMatrix(df_res_vs_pr_diam)
-scatterplot(Pred_diam, res_diam)
+modelo_rend <- aov(Rendimiento ~ Tratamiento + Bloques, data = var_prod)
+anova_rend <- anova(modelo_rend)
+sw_test_rend <- shapiro.test(residuals(modelo_rend))
+lev_test_rend <- leveneTest(Rendimiento ~ Tratamiento, data = var_prod)
+LSD_rend <- LSD.test(modelo_rend, trt = "Tratamiento", group = TRUE, alpha = 0.05)        
+qqnorm(var_prod$Rendimiento)
+res_rend <- residuals(modelo_rend)
+Pred_rend <- predict(modelo_rend)
+df_res_vs_pr_rend <- data.frame(Pred_rend, res_rend)
+scatterplotMatrix(df_res_vs_pr_rend)
+scatterplot(Pred_rend, res_rend)
 
 #Calculando estadisticos de los datos
 
-cv_alt <- round(100 * summary.lm(modelo_alt)$sigma / mean(var_crecimiento$Altura), 2)
-cv_hoj <- round(100 * summary.lm(modelo_hoj)$sigma / mean(var_crecimiento$Numero_de_hojas), 2)
-cv_diam <- round(100 * summary.lm(modelo_diam)$sigma / mean(var_crecimiento$Diametro), 2)
+cv_vainas <- round(100 * summary.lm(modelo_sqrt_vainas)$sigma / mean(sqrt(var_prod$Vainas_por_planta)), 2)
+cv_granos <- round(100 * summary.lm(modelo_granos)$sigma / mean(var_prod$Granos_por_planta), 2)
+cv_rend <- round(100 * summary.lm(modelo_rend)$sigma / mean(var_prod$Rendimiento), 2)
 
-r2_alt <- round((anova_alt$'Sum Sq'[1]+anova_alt$'Sum Sq'[2]) / sum(anova_alt$'Sum Sq'), 2)
-r2_hoj <- round((anova_hoj$'Sum Sq'[1]+anova_hoj$'Sum Sq'[2]) / sum(anova_hoj$'Sum Sq'), 2)
-r2_diam <- round((anova_diam$'Sum Sq'[1]+anova_diam$'Sum Sq'[2]) / sum(anova_diam$'Sum Sq'), 2)
+
+r2_vainas <- r2_vainas <- round(summary.lm(modelo_sqrt_vainas)$r.squared, 2)
+r2_granos <- round((anova_granos$'Sum Sq'[1]+anova_granos$'Sum Sq'[2]) / sum(anova_granos$'Sum Sq'), 2)
+r2_rend <- round((anova_rend$'Sum Sq'[1]+anova_rend$'Sum Sq'[2]) / sum(anova_rend$'Sum Sq'), 2)
 
 
 #Construyendo un marco de datos
-trt <- c(rownames(LSD_diam$groups))
-letra_alt <- c(LSD_alt$groups)
-letra_hoj <- c(LSD_hoj$groups)
-letra_diam <- c(LSD_diam$groups)
-df <- data.frame(trt, letra_alt, letra_diam, letra_hoj)
-
-Co_Var <- c(cv_alt, cv_hoj, cv_diam)
-Coe_Det <- c(r2_alt, r2_hoj, r2_diam)
-Shapiro_Wilk <- c(sw_test_alt$p.value, sw_test_hoj$p.value, sw_test_diam$p.value)
-Levene <- c(lev_test_alt$`Pr(>F)`[1], lev_test_hoj$`Pr(>F)`[1], lev_test_diam$`Pr(>F)`[1])
-p_values <- c(
-        summary(modelo_alt)[[1]][["Pr(>F)"]][1],
-        summary(modelo_hoj)[[1]][["Pr(>F)"]][1],
-        summary(modelo_diam)[[1]][["Pr(>F)"]][1]
+trt <- c(rownames(LSD_vainas$groups))
+letra_vainas <- c(LSD_vainas$groups)
+letra_granos <- c(LSD_granos$groups)
+letras_rend <- c(LSD_rend$groups)
+df <- data.frame(trt, letra_vainas, letra_granos, letras_rend)
+Co_Var <- c(cv_vainas, cv_granos, cv_rend)
+Coe_Det <- c(r2_vainas, r2_granos, r2_rend)
+Shapiro_Wilk <- c(sw_test_sqrt_vainas$p.value, sw_test_granos$p.value, sw_test_rend$p.value)
+Levene <- c(
+        lev_test_sqrt_vainas$`Pr(>F)`[1],
+        lev_test_granos$`Pr(>F)`[1],
+        lev_test_rend$`Pr(>F)`[1]
 )
-Variables <- c(Altura = "Altura", Numero_de_hojas = "Número de hojas", Diametro = "Diámetro del tallo")
+p_values <- c(
+        summary(modelo_sqrt_vainas)[[1]][["Pr(>F)"]][1],
+        summary(modelo_granos)[[1]][["Pr(>F)"]][1],
+        summary(modelo_rend)[[1]][["Pr(>F)"]][1]
+)
+Variables <- c("Vainas por planta", "Granos por planta (Log)", "Rendimiento")
 df_stad <- data.frame(Variables, Co_Var, Coe_Det, Shapiro_Wilk, Levene, p_values)
 
 
@@ -92,76 +104,78 @@ etiq_zz <- function(x) {
                paste0("\n", x))
 }
 
+#Graficando Numero de vainas por planta
 
-graf_alt <- ggplot(data = df) +
-        theme_classic() +
-        theme(
-                panel.grid.major = element_blank(),
-                panel.grid.minor = element_blank(),
-                panel.background = element_rect(fill = "white", colour = NA))+
-        geom_col(aes(x = trt, y = Altura),
+graf_vainas <- ggplot(data = df) +
+        geom_col(aes(x = trt, y = sqrt.Vainas_por_planta.),
                  fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = Altura, label = groups),
+        geom_text(aes(x = trt, y = sqrt.Vainas_por_planta., label = groups.1),
                   vjust = -0.5,
                   size = 4,
                   fontface = "bold")+
         scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
+        scale_y_continuous(limits = c(0, 2.8),
+                           breaks = seq(0, 2.8, by = 0.5)) +
         theme_minimal(base_size = 11) +
         theme(axis.text.x = element_text(size = 11, face = "bold"),
               axis.text.y = element_text(size = 11, face = "bold"))+
-        labs(x = "", y = "Altura") +
-        theme_minimal(base_size = 10) +
-        theme(axis.text.x  = element_text(size = 10, face = "bold"),
-                axis.text.y  = element_text(size = 10, face = "bold"),
-                axis.title.x = element_text(face = "bold"),
-                axis.title.y = element_text(face = "bold"))
-        
-print(graf_alt)
-
-graf_hoj <- ggplot(data = df) +
-        geom_col(aes(x = trt, y = Numero_de_hojas),
-                 fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = Numero_de_hojas, label = groups.1),
-                  vjust = -0.5,
-                  size = 4,
-                  fontface = "bold")+
-        scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
-        scale_y_continuous(limits = c(0, 20),
-                breaks = seq(0, 20, by = 4)) +
-        theme_minimal(base_size = 11) +
-        theme(axis.text.x = element_text(size = 11, face = "bold"),
-              axis.text.y = element_text(size = 11, face = "bold"))+
-        labs(x = "Tratamientos", y = "Número de hojas") +
+        labs(x = "", y = "Número de vainas(Raiz cuadrada)") +
         theme_minimal(base_size = 10) +
         theme(axis.text.x  = element_text(size = 10, face = "bold"),
               axis.text.y  = element_text(size = 10, face = "bold"),
               axis.title.x = element_text(face = "bold"),
               axis.title.y = element_text(face = "bold"))
-       
-print(graf_hoj)       
 
-graf_diam <- ggplot(data = df) +
-        geom_col(aes(x = trt, y = Diametro),
+print(graf_vainas)
+
+#Graficando granos por planta
+
+graf_granos <- ggplot(data = df) +
+        geom_col(aes(x = trt, y = Granos_por_planta),
                  fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = Diametro, label = groups.2),
+        geom_text(aes(x = trt, y = Granos_por_planta, label = groups.1),
                   vjust = -0.5,
                   size = 4,
                   fontface = "bold")+
         scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
-        scale_y_continuous(limits = c(0, 6),
-                           breaks = seq(0, 6, by = 1)) +
+        scale_y_continuous(limits = c(0, 27),
+                           breaks = seq(0, 27, by = 5)) +
         theme_minimal(base_size = 11) +
         theme(axis.text.x = element_text(size = 11, face = "bold"),
-              axis.text.y = element_text(size = 11, face = "bold"),
-              margin = margin(t = 6))+
-        labs(x = "Tratamientos", y = "Diámetro") +
+              axis.text.y = element_text(size = 11, face = "bold"))+
+        labs(x = "Tratamientos", y = "Granos por planta") +
         theme_minimal(base_size = 10) +
         theme(axis.text.x  = element_text(size = 10, face = "bold"),
               axis.text.y  = element_text(size = 10, face = "bold"),
               axis.title.x = element_text(face = "bold"),
               axis.title.y = element_text(face = "bold"))
-        
-print(graf_diam)
+
+print(graf_granos) 
+
+#Graficando el rendimiento
+
+graf_rend <- ggplot(data = df) +
+        geom_col(aes(x = trt, y = Rendimiento),
+                 fill = "#808080", width = 0.5) +
+        geom_text(aes(x = trt, y = Rendimiento, label = groups.2),
+                  vjust = -0.5,
+                  size = 4,
+                  fontface = "bold")+
+        scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
+        scale_y_continuous(limits = c(0, 1100),
+                           breaks = seq(0, 1100, by = 100)) +
+        theme_minimal(base_size = 11) +
+        theme(axis.text.x = element_text(size = 11, face = "bold"),
+              axis.text.y = element_text(size = 11, face = "bold"))+
+        labs(x = "Tratamientos", y = expression(Rendimiento ~ (kg %.% ha^-1))
+        ) +
+        theme_minimal(base_size = 10) +
+        theme(axis.text.x  = element_text(size = 10, face = "bold"),
+              axis.text.y  = element_text(size = 10, face = "bold"),
+              axis.title.x = element_text(face = "bold"),
+              axis.title.y = element_text(face = "bold"))
+
+print(graf_rend)   
 
 #Convierte el data frame llamado "Supuestos_y_estadisticos" a una tabla en formato apa
 
@@ -249,7 +263,7 @@ gg_tab
 # 3) Convertir a “ggplot” para patchwork
 
 graf_final <-
-        (graf_alt + graf_hoj + graf_diam + wrap_elements(gg_tab)) +
+        (graf_vainas + graf_granos + graf_rend + wrap_elements(gg_tab)) +
         plot_layout(ncol = 2, nrow = 2) &
         theme_classic() &
         theme(
@@ -273,7 +287,7 @@ graf_final
 
 
 ggsave(
-        filename = "graf_var_crec.png",
+        filename = "graf_var_prod.png",
         plot     = graf_final,
         width    = 12,          
         height   = 8,          
@@ -281,9 +295,3 @@ ggsave(
         dpi      = 300,        
         device   = "png"
 )
-
-
-
-
-
-
