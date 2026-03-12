@@ -67,7 +67,7 @@ anova_alt
 ```{r}
 sw_test_alt <- shapiro.test(residuals(modelo_alt))
 sw_test_alt
-lev_test_alt <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimiento)
+lev_test_alt <- leveneTest(Altura ~ Tratamientos, data = var_crecimiento)
 lev_test_alt
 ```
 
@@ -133,7 +133,7 @@ anova_diam
 #### Prueba de Shapiro Wilk y Levene para normalidad y homocedasticidad en la variable diámetro del tallo
 
 ```{r}
-sw_test_diam <- shapiro.test(residuals(modelo_hoj))
+sw_test_diam <- shapiro.test(residuals(modelo_diam))
 sw_test_diam
 lev_test_diam <- leveneTest(Diametro ~ Tratamientos, data = var_crecimiento)
 lev_test_diam
@@ -198,6 +198,7 @@ p_values <- c(
 Variables <- c(Altura = "Altura", Numero_de_hojas = "Número de hojas", Diametro = "Diámetro del tallo")
 df_stad <- data.frame(Variables, Co_Var, Coe_Det, Shapiro_Wilk, Levene, p_values)
 gg_tab <-  knitr::kable(df_stad)
+gg_tab
 ```
 
 # Graficando las variables de crecimiento del estudio

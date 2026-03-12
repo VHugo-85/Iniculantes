@@ -2394,13 +2394,13 @@ W = 0.97009, p-value = 0.502</code></pre>
 </div>
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lev_test_alt <span class="ot">&lt;-</span> <span class="fu">leveneTest</span>(Numero_de_hojas <span class="sc">~</span> Tratamientos, <span class="at">data =</span> var_crecimiento)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lev_test_alt <span class="ot">&lt;-</span> <span class="fu">leveneTest</span>(Altura <span class="sc">~</span> Tratamientos, <span class="at">data =</span> var_crecimiento)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lev_test_alt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Levene&#39;s Test for Homogeneity of Variance (center = median)
       Df F value Pr(&gt;F)
-group  7  0.6229  0.732
+group  7  0.6581 0.7045
       24               </code></pre>
 </div>
 </div>
@@ -2666,15 +2666,15 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <div class="cell">
 <details class="code-fold">
 <summary>Código</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sw_test_diam <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(modelo_hoj))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>sw_test_diam <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(modelo_diam))</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sw_test_diam</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
 
-data:  residuals(modelo_hoj)
-W = 0.96238, p-value = 0.3188</code></pre>
+data:  residuals(modelo_diam)
+W = 0.94817, p-value = 0.1278</code></pre>
 </div>
 <details class="code-fold">
 <summary>Código</summary>
@@ -2846,8 +2846,62 @@ attr(,&quot;class&quot;)
 <span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>Variables <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Altura =</span> <span class="st">&quot;Altura&quot;</span>, <span class="at">Numero_de_hojas =</span> <span class="st">&quot;Número de hojas&quot;</span>, <span class="at">Diametro =</span> <span class="st">&quot;Diámetro del tallo&quot;</span>)</span>
 <span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>df_stad <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Variables, Co_Var, Coe_Det, Shapiro_Wilk, Levene, p_values)</span>
-<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>gg_tab <span class="ot">&lt;-</span>  knitr<span class="sc">::</span><span class="fu">kable</span>(df_stad)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>gg_tab <span class="ot">&lt;-</span>  knitr<span class="sc">::</span><span class="fu">kable</span>(df_stad)</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>gg_tab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 22%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Variables</th>
+<th style="text-align: right;">Co_Var</th>
+<th style="text-align: right;">Coe_Det</th>
+<th style="text-align: right;">Shapiro_Wilk</th>
+<th style="text-align: right;">Levene</th>
+<th style="text-align: right;">p_values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Altura</td>
+<td style="text-align: left;">Altura</td>
+<td style="text-align: right;">17.94</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">0.5020192</td>
+<td style="text-align: right;">0.7044856</td>
+<td style="text-align: right;">0.0382339</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Numero_de_hojas</td>
+<td style="text-align: left;">Número de hojas</td>
+<td style="text-align: right;">11.48</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">0.3187648</td>
+<td style="text-align: right;">0.7320043</td>
+<td style="text-align: right;">0.0033998</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Diametro</td>
+<td style="text-align: left;">Diámetro del tallo</td>
+<td style="text-align: right;">5.93</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">0.1278127</td>
+<td style="text-align: right;">0.8882577</td>
+<td style="text-align: right;">0.0040886</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </section>
 </section>
