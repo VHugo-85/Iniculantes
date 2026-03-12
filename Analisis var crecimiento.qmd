@@ -1,0 +1,273 @@
+---
+title: "Análisis de variables de crecimiento"
+subtitle: "Altura, Diámetro del tallo y número de hojas"
+author: "Víctor Hugo Rodríguez Salguera"
+date: last-modified
+lang: es # Establece el idioma en español (para "Table of Contents", etc.)
+format:
+  html:
+    toc: true
+    toc-location: left
+    theme: cosmo
+    code-fold: true
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+  echo: true
+  eval: true
+editor: visual
+---
+
+# Librerias necesarias
+
+```{r}
+library(agricolae)
+library(car)
+library(patchwork)
+library(kableExtra)
+library(dplyr)
+library(readr)
+library(ggpubr)
+library(ggplotify)
+library(grid)
+library(gtable)
+library(cowplot)
+library(gridExtra)
+library(broom)
+library(stringr)
+library(knitr)
+
+```
+
+# Análisis de variables de crecimiento
+
+### Leyendo los datos
+
+```{r}
+var_crecimiento <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Crecimiento.csv")
+var_crecimiento
+var_crecimiento$Tratamientos <- as.factor(var_crecimiento$Tratamientos)
+var_crecimiento$Bloques <- as.factor(var_crecimiento$Bloques)
+```
+
+### Andeva, diagnostico y parámetros del modelo para la variable altura
+
+#### Analisis de variansza de la variable altura
+
+```{r}
+modelo_alt <- aov(Altura ~ Tratamientos + Bloques, data = var_crecimiento)
+modelo_alt
+anova_alt  <- anova(modelo_alt)
+anova_alt
+```
+
+#### Prueba de Shapiro Wilk y Levene para normalidad y homocedasticidad en la variable altura
+
+```{r}
+sw_test_alt <- shapiro.test(residuals(modelo_alt))
+sw_test_alt
+lev_test_alt <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimiento)
+lev_test_alt
+```
+
+#### Evaluación visual de los supuestos para la variable altura
+
+```{r}
+par(mfrow = c(1, 2)) # Divide la pantalla en 2
+plot(modelo_alt, which = c(1, 2), col = "steelblue", pch = 16)
+```
+
+#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable altura
+
+```{r}
+LSD_alt <- LSD.test(modelo_alt, "Tratamientos", group = TRUE, alpha = 0.05)
+LSD_alt
+```
+
+### Andeva, diagnostico y parámetros del modelo para la variable número de hojas
+
+#### Analisis de variansza de la variable numero de hojas
+
+```{r}
+modelo_hoj <- aov(Numero_de_hojas ~ Tratamientos + Bloques, data = var_crecimiento)
+modelo_hoj
+anova_hoj <- anova(modelo_hoj)
+anova_hoj
+```
+
+#### Prueba de Shapiro Wilk y Levene para normalidad y homocedasticidad en la variable número de hojas
+
+```{r}
+sw_test_hoj <- shapiro.test(residuals(modelo_hoj))
+sw_test_hoj
+lev_test_hoj <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimiento)
+lev_test_hoj
+```
+
+#### Evaluación visual de los supuestos para la variable numero de hojas
+
+```{r}
+par(mfrow = c(1, 2)) # Divide la pantalla en 2
+plot(modelo_hoj, which = c(1, 2), col = "steelblue", pch = 16)
+```
+
+#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable número de hojas
+
+```{r}
+LSD_hoj <- LSD.test(modelo_hoj, trt = "Tratamientos", group = TRUE, alpha = 0.05)
+LSD_hoj
+```
+
+### Andeva, diagnostico y parámetros del modelo para la variable diamétro del tallo
+
+#### Analisis de varianza para la variable diametro del tallo
+
+```{r}
+modelo_diam <- aov(Diametro ~ Tratamientos + Bloques, data = var_crecimiento)
+modelo_diam
+anova_diam <- anova(modelo_diam)
+anova_diam
+```
+
+#### Prueba de Shapiro Wilk y Levene para normalidad y homocedasticidad en la variable diámetro del tallo
+
+```{r}
+sw_test_diam <- shapiro.test(residuals(modelo_hoj))
+sw_test_diam
+lev_test_diam <- leveneTest(Diametro ~ Tratamientos, data = var_crecimiento)
+lev_test_diam
+```
+
+#### Evaluación visual de los supuestos para la variable diámetro del tallo
+
+```{r}
+par(mfrow = c(1, 2)) # Divide la pantalla en 2
+plot(modelo_diam, which = c(1, 2), col = "steelblue", pch = 16)
+```
+
+#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable diámetro del tallo
+
+```{r}
+LSD_diam <- LSD.test(modelo_diam, trt = "Tratamientos", group = TRUE, alpha = 0.05)
+LSD_diam
+```
+
+# Calculando estadísticos de los datos
+
+### Coeficientes de variación de variables de crecimiento
+
+```{r}
+cv_alt <- round(100 * summary.lm(modelo_alt)$sigma / mean(var_crecimiento$Altura), 2)
+cv_alt
+cv_hoj <- round(100 * summary.lm(modelo_hoj)$sigma / mean(var_crecimiento$Numero_de_hojas), 2)
+cv_hoj
+cv_diam <- round(100 * summary.lm(modelo_diam)$sigma / mean(var_crecimiento$Diametro), 2)
+cv_diam
+```
+
+### Coeficientes de determinación (`$R^2$`) de variables de crecimeinto
+
+```{r}
+r2_alt <- round((anova_alt$'Sum Sq'[1]+anova_alt$'Sum Sq'[2]) / sum(anova_alt$'Sum Sq'), 2)
+r2_alt
+r2_hoj <- round((anova_hoj$'Sum Sq'[1]+anova_hoj$'Sum Sq'[2]) / sum(anova_hoj$'Sum Sq'), 2)
+r2_hoj
+r2_diam <- round((anova_diam$'Sum Sq'[1]+anova_diam$'Sum Sq'[2]) / sum(anova_diam$'Sum Sq'), 2)
+r2_diam
+```
+
+## Marco de datos de estadísticos
+
+```{r}
+trt <- c(rownames(LSD_diam$groups))
+letra_alt <- c(LSD_alt$groups)
+letra_hoj <- c(LSD_hoj$groups)
+letra_diam <- c(LSD_diam$groups)
+df <- data.frame(trt, letra_alt, letra_diam, letra_hoj)
+
+Co_Var <- c(cv_alt, cv_hoj, cv_diam)
+Coe_Det <- c(r2_alt, r2_hoj, r2_diam)
+Shapiro_Wilk <- c(sw_test_alt$p.value, sw_test_hoj$p.value, sw_test_diam$p.value)
+Levene <- c(lev_test_alt$`Pr(>F)`[1], lev_test_hoj$`Pr(>F)`[1], lev_test_diam$`Pr(>F)`[1])
+p_values <- c(
+        summary(modelo_alt)[[1]][["Pr(>F)"]][1],
+        summary(modelo_hoj)[[1]][["Pr(>F)"]][1],
+        summary(modelo_diam)[[1]][["Pr(>F)"]][1]
+)
+Variables <- c(Altura = "Altura", Numero_de_hojas = "Número de hojas", Diametro = "Diámetro del tallo")
+df_stad <- data.frame(Variables, Co_Var, Coe_Det, Shapiro_Wilk, Levene, p_values)
+gg_tab <-  knitr::kable(df_stad)
+```
+
+# Graficando las variables de crecimiento del estudio
+
+```{r}
+graf_alt <- ggplot(data = df) +
+        theme_classic() +
+        theme(
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_rect(fill = "white", colour = NA))+
+        geom_col(aes(x = trt, y = Altura),
+                 fill = "#808080", width = 0.5) +
+        geom_text(aes(x = trt, y = Altura, label = groups),
+                  vjust = -0.5,
+                  size = 4,
+                  fontface = "bold")+
+        scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
+        theme_minimal(base_size = 11) +
+        theme(axis.text.x = element_text(size = 11, face = "bold"),
+              axis.text.y = element_text(size = 11, face = "bold"))+
+        labs(x = "", y = "Altura") +
+        theme_minimal(base_size = 10) +
+        theme(axis.text.x  = element_text(size = 10, face = "bold"),
+                axis.text.y  = element_text(size = 10, face = "bold"),
+                axis.title.x = element_text(face = "bold"),
+                axis.title.y = element_text(face = "bold"))
+print(graf_alt)
+graf_hoj <- ggplot(data = df) +
+        geom_col(aes(x = trt, y = Numero_de_hojas),
+                 fill = "#808080", width = 0.5) +
+        geom_text(aes(x = trt, y = Numero_de_hojas, label = groups.1),
+                  vjust = -0.5,
+                  size = 4,
+                  fontface = "bold")+
+        scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
+        scale_y_continuous(limits = c(0, 20),
+                breaks = seq(0, 20, by = 4)) +
+        theme_minimal(base_size = 11) +
+        theme(axis.text.x = element_text(size = 11, face = "bold"),
+              axis.text.y = element_text(size = 11, face = "bold"))+
+        labs(x = "Tratamientos", y = "Número de hojas") +
+        theme_minimal(base_size = 10) +
+        theme(axis.text.x  = element_text(size = 10, face = "bold"),
+              axis.text.y  = element_text(size = 10, face = "bold"),
+              axis.title.x = element_text(face = "bold"),
+              axis.title.y = element_text(face = "bold"))
+       
+print(graf_hoj)       
+
+graf_diam <- ggplot(data = df) +
+        geom_col(aes(x = trt, y = Diametro),
+                 fill = "#808080", width = 0.5) +
+        geom_text(aes(x = trt, y = Diametro, label = groups.2),
+                  vjust = -0.5,
+                  size = 4,
+                  fontface = "bold")+
+        scale_x_discrete(labels = function(x) str_replace_all(x, "_+", "\n")) +
+        scale_y_continuous(limits = c(0, 6),
+                           breaks = seq(0, 6, by = 1)) +
+        theme_minimal(base_size = 11) +
+        theme(axis.text.x = element_text(size = 11, face = "bold"),
+              axis.text.y = element_text(size = 11, face = "bold"),
+              margin = margin(t = 6))+
+        labs(x = "Tratamientos", y = "Diámetro") +
+        theme_minimal(base_size = 10) +
+        theme(axis.text.x  = element_text(size = 10, face = "bold"),
+              axis.text.y  = element_text(size = 10, face = "bold"),
+              axis.title.x = element_text(face = "bold"),
+              axis.title.y = element_text(face = "bold"))
+        
+print(graf_diam)
+```
