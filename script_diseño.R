@@ -1,4 +1,6 @@
 #Diseño experimental BCA
+
+library(agricolae)
 # Bloque I
 B1 <- c("T7","T3","T4","T1","T5","T2","T8","T6")
 # Bloque II
