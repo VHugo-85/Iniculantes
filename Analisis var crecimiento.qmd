@@ -51,7 +51,7 @@ var_crecimiento$Tratamientos <- as.factor(var_crecimiento$Tratamientos)
 var_crecimiento$Bloques <- as.factor(var_crecimiento$Bloques)
 ```
 
-### Andeva, diagnostico y parámetros del modelo para la variable altura
+### Andeva, comparación de medias, diagnóstico y parámetros del modelo para la variable altura
 
 #### Analisis de variansza de la variable altura
 
@@ -201,7 +201,7 @@ gg_tab <-  knitr::kable(df_stad)
 gg_tab
 ```
 
-# Graficando las variables de crecimiento del estudio
+# Graficando el modelo y las comparaciones de medias de las variables de crecimiento
 
 ```{r}
 graf_alt <- ggplot(data = df) +
