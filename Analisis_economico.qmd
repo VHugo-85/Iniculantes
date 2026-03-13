@@ -1,5 +1,5 @@
 ---
-title: "Análisis eonomico de las aternativas promotoras del crecimiento"
+title: "Análisis económico de las aternativas promotoras del crecimiento en el cultivo de frijol"
 subtitle: "Análisis de nominancia y Tasa de Retorno Marginal"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified

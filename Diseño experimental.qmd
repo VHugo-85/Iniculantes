@@ -2,7 +2,7 @@
 title: "Diseño experimental"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
-lang: es # Establece el idioma en español (para "Table of Contents", etc.)
+lang: es
 format:
   html:
     toc: true
@@ -18,11 +18,18 @@ execute:
 editor: visual
 ---
 
-## 1. Bloque Completo al Azar
+# Librería necesaria
 
-El presente documento detalla la estructura del diseño de **Bloques Completos al Azar (BCA)**. Este diseño se utilizó para bloqear una gradiente de variabilidad (sombra) en el terreno que, en su momento, se consideró necesario controlar mediante la agrupación de las unidades experimentales en bloques homogéneos.
+```{r}
+library(agricolae)
+library(knitr)
+```
 
-## 2. Configuración del Diseño en R
+## Bloque Completo al Azar
+
+El presente documento detalla la estructura del diseño de **Bloques Completos al Azar (BCA)**. Este diseño se utilizó para bloquear una gradiente de variabilidad (sombra) en el terreno que, en su momento, se consideró necesario controlar mediante la agrupación de las unidades experimentales en bloques homogéneos.
+
+## Configuración del Diseño en R
 
 Se evaluaron ocho tratamientos evaluados.
 
@@ -35,12 +42,6 @@ T5 <- "Micorrizas + T. harzianum"
 T6 <- "Rhizobium + T. harzianum"
 T7 <- "Micorrizas + Rhizobium"
 T8 <- "Micorriza + Rhizobium + T. harzianum"
-```
-
-```         
-```
-
-```         
 ```
 
 # Definición de la distribución por bloques
@@ -59,7 +60,7 @@ B4 <- c("T8","T7","T1","T3","T4","T6","T2","T5")
 
 ## Marco de datos
 
-Creación del Marco de datos con tratamientos aleatorizados completamente dentro de cada bloque
+Creación del marco de datos con tratamientos aleatorizados completamente dentro de cada bloque
 
 ```{r}
 #| label: Codigo del diseño experimental
@@ -67,17 +68,16 @@ Creación del Marco de datos con tratamientos aleatorizados completamente dentro
 #| warning: true
 #| paged-print: true
 BCA <- data.frame(
+        Parcela = 1:32,
         Bloques = rep(paste0("Bloque ", 1:4), 
-                      each = 8), Parcela = 1:32, 
+                      each = 8), 
         Tratamiento = c(B1, B2, B3, B4) 
         )
-print(BCA)
-```
-
-Diseño en establecido en campo
-
-```{r}
+Dis_tab <- knitr::kable(BCA, align = "c")
+Dis_tab
 
 ```
+
+Diseño establecido en campo
 
 ![Diseño establecido](images/Diseño.png)

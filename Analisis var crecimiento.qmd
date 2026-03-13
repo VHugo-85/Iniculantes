@@ -3,7 +3,7 @@ title: "Análisis de variables de crecimiento"
 subtitle: "Altura, Diámetro del tallo y número de hojas"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
-lang: es # Establece el idioma en español (para "Table of Contents", etc.)
+lang: es
 format:
   html:
     toc: true
@@ -53,7 +53,7 @@ var_crecimiento$Bloques <- as.factor(var_crecimiento$Bloques)
 
 ### Andeva, comparación de medias, diagnóstico y parámetros del modelo para la variable altura
 
-#### Analisis de variansza de la variable altura
+#### Análisis de varianza de la variable altura
 
 ```{r}
 modelo_alt <- aov(Altura ~ Tratamientos + Bloques, data = var_crecimiento)
@@ -78,7 +78,7 @@ par(mfrow = c(1, 2)) # Divide la pantalla en 2
 plot(modelo_alt, which = c(1, 2), col = "steelblue", pch = 16)
 ```
 
-#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable altura
+#### Diferencia mínima significativa según el criterio de Fisher (`LSD_Fisher`) para la variable altura
 
 ```{r}
 LSD_alt <- LSD.test(modelo_alt, "Tratamientos", group = TRUE, alpha = 0.05)
@@ -87,7 +87,7 @@ LSD_alt
 
 ### Andeva, diagnostico y parámetros del modelo para la variable número de hojas
 
-#### Analisis de variansza de la variable numero de hojas
+#### Análisis de variansza de la variable número de hojas
 
 ```{r}
 modelo_hoj <- aov(Numero_de_hojas ~ Tratamientos + Bloques, data = var_crecimiento)
@@ -105,14 +105,14 @@ lev_test_hoj <- leveneTest(Numero_de_hojas ~ Tratamientos, data = var_crecimient
 lev_test_hoj
 ```
 
-#### Evaluación visual de los supuestos para la variable numero de hojas
+#### Evaluación visual de los supuestos para la variable número de hojas
 
 ```{r}
 par(mfrow = c(1, 2)) # Divide la pantalla en 2
 plot(modelo_hoj, which = c(1, 2), col = "steelblue", pch = 16)
 ```
 
-#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable número de hojas
+#### Diferencia mínima significativa según el criterio de Fisher (`LSD_Fisher`) para la variable número de hojas
 
 ```{r}
 LSD_hoj <- LSD.test(modelo_hoj, trt = "Tratamientos", group = TRUE, alpha = 0.05)
@@ -121,7 +121,7 @@ LSD_hoj
 
 ### Andeva, diagnostico y parámetros del modelo para la variable diamétro del tallo
 
-#### Analisis de varianza para la variable diametro del tallo
+#### Análisis de varianza para la variable diámetro del tallo
 
 ```{r}
 modelo_diam <- aov(Diametro ~ Tratamientos + Bloques, data = var_crecimiento)
@@ -146,7 +146,7 @@ par(mfrow = c(1, 2)) # Divide la pantalla en 2
 plot(modelo_diam, which = c(1, 2), col = "steelblue", pch = 16)
 ```
 
-#### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable diámetro del tallo
+#### Diferencia mínima significativa según el criterio de Fisher (`LSD_Fisher`) para la variable diámetro del tallo
 
 ```{r}
 LSD_diam <- LSD.test(modelo_diam, trt = "Tratamientos", group = TRUE, alpha = 0.05)

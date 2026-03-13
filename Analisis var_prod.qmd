@@ -1,6 +1,6 @@
 ---
 title: "Análisis de variables productivas"
-subtitle: "Numero de vainas por plantas, numero de granos por planta y rendimiento"
+subtitle: "Número de vainas por plantas, número de granos por planta y rendimiento"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
 lang: es 
@@ -49,9 +49,9 @@ var_prod$Tratamiento <- as.factor(var_prod$Tratamiento)
 var_prod$Bloques <- as.factor(var_prod$Bloques)
 ```
 
-## ANDEVA, comparación de medias, diagnóstico y parametros del modelo para la variable número de vainas
+## ANDEVA, comparación de medias, diagnóstico y parámetros del modelo para la variable número de vainas
 
-### Analisis de varianza de la variable número de vaínas
+### Análisis de varianza de la variable número de vaínas
 
 ```{r}
 modelo_sqrt_vainas <- aov(sqrt(Vainas_por_planta) ~ Tratamiento + Bloques, data = var_prod)
@@ -61,7 +61,7 @@ anova_sqrt_vainas
 #La variable se transforma a la raiz cuadrada considerando que los datos no cumplen con el supuesto de homogeneidad de varianza, por lo que procede a transformar la variable a la raiz cuadrada.
 ```
 
-### Prueba de Shapiro Wilk y Levene para la raiz cuadrada de la variable Número de vainas
+### Prueba de Shapiro Wilk y Levene para la raíz cuadrada de la variable Número de vainas
 
 ```{r}
 sw_test_sqrt_vainas <- shapiro.test(residuals(modelo_sqrt_vainas))
@@ -84,9 +84,9 @@ LSD_vainas <- LSD.test(modelo_sqrt_vainas, trt = "Tratamiento", group = TRUE, al
 LSD_vainas
 ```
 
-## ANDEVA, comparación de medias, diagnóstico y parametros del modelo para la variable número de granos
+## ANDEVA, comparación de medias, diagnóstico y parámetros del modelo para la variable número de granos
 
-### Analisis de varianza de la variable número de granos
+### Analisis de varianza de la variable Número de granos
 
 ```{r}
 modelo_granos <- aov(Granos_por_planta ~ Tratamiento + Bloques, data = var_prod)
@@ -111,14 +111,14 @@ par(mfrow = c(1, 2)) # Divide la pantalla en 2
 plot(modelo_granos, which = c(1, 2), col = "steelblue", pch = 16)
 ```
 
-### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable altura
+### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable Número de granos
 
 ```{r}
 LSD_granos <- LSD.test(modelo_granos, trt = "Tratamiento", group = TRUE, alpha = 0.05)  
 LSD_granos
 ```
 
-## ANDEVA, comparación de medias, diagnóstico y parametros del modelo para la variable Rendimiento
+## ANDEVA, comparación de medias, diagnóstico y parámetros del modelo para la variable Rendimiento
 
 ### Analisis de varianza de la variable Rendimiento
 
@@ -129,7 +129,7 @@ anova_rend <- anova(modelo_rend)
 anova_rend
 ```
 
-### Prueba de Shapiro Wilk y Levene para la raiz cuadrada de la variable Rendimiento
+### Prueba de Shapiro Wilk y Levene para la variable Rendimiento
 
 ```{r}
 sw_test_rend <- shapiro.test(residuals(modelo_rend))
@@ -145,7 +145,7 @@ par(mfrow = c(1, 2)) # Divide la pantalla en 2
 plot(modelo_rend, which = c(1, 2), col = "steelblue", pch = 16)
 ```
 
-### Diferencia mínima significativa segun el criterio de Fisher (`LSD_Fisher`) para la variable Rendimiento
+### Diferencia mínima significativa según el criterio de Fisher (`LSD_Fisher`) para la variable Rendimiento
 
 ```{r}
 LSD_rend <- LSD.test(modelo_rend, trt = "Tratamiento", group = TRUE, alpha = 0.05) 
@@ -176,7 +176,7 @@ r2_rend <- round((anova_rend$'Sum Sq'[1]+anova_rend$'Sum Sq'[2]) / sum(anova_ren
 r2_rend
 ```
 
-## Marco de datos estadisticos
+## Marco de datos estadísticos
 
 ```{r}
 trt <- c(rownames(LSD_vainas$groups))
@@ -260,7 +260,8 @@ graf_granos <- ggplot(data = df) +
 
 print(graf_granos) 
 
-#Graficando el rendimiento
+
+
 
 graf_rend <- ggplot(data = df) +
         geom_col(aes(x = trt, y = Rendimiento),
