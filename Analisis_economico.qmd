@@ -1,5 +1,5 @@
 ---
-title: "Resiliencia climática en Phaseolus vulgaris L. mediante el uso de microorganismos promotores del crecimiento en el Corredor"
+title: "Resiliencia climática en Phaseolus vulgaris L. mediante el uso de microorganismos promotores del crecimiento en el Corredor Seco nicaragüense"
 subtitle: "Análisis económico: Dominancia y Tasa de Retorno Marginal"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
