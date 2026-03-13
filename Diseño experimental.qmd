@@ -1,5 +1,6 @@
 ---
-title: "Diseño experimental"
+title: "Resiliencia climática en Phaseolus vulgaris L. mediante el uso de microorganismos promotores del crecimiento en el Corredor Seco nicaragüense"
+sub title: Diseño experimental
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
 lang: es

@@ -1,6 +1,6 @@
 ---
-title: "Análisis de variables de crecimiento"
-subtitle: "Altura, Diámetro del tallo y número de hojas"
+title: "Resiliencia climática en Phaseolus vulgaris L. mediante el uso de microorganismos promotores del crecimiento en el Corredor Seco nicaragüense"
+subtitle: "Análisis de variables de crecimiento: Altura, Diámetro del tallo y número de hojas"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
 lang: es
@@ -45,10 +45,16 @@ library(knitr)
 ### Leyendo los datos
 
 ```{r}
+#|echo: false
 var_crecimiento <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Crecimiento.csv")
-var_crecimiento
+
 var_crecimiento$Tratamientos <- as.factor(var_crecimiento$Tratamientos)
 var_crecimiento$Bloques <- as.factor(var_crecimiento$Bloques)
+kable(var_crecimiento, 
+      digits = 2, 
+      caption = "Marco de datos de las variables de crecimiento",
+      col.names = c("Tratamientos", "Bloques", "Altura", "Número de hojas", "Diámetro del tallo")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 ```
 
 ### Andeva, comparación de medias, diagnóstico y parámetros del modelo para la variable altura
@@ -60,6 +66,7 @@ modelo_alt <- aov(Altura ~ Tratamientos + Bloques, data = var_crecimiento)
 modelo_alt
 anova_alt  <- anova(modelo_alt)
 anova_alt
+
 ```
 
 #### Prueba de Shapiro Wilk y Levene para normalidad y homocedasticidad en la variable altura
@@ -83,6 +90,13 @@ plot(modelo_alt, which = c(1, 2), col = "steelblue", pch = 16)
 ```{r}
 LSD_alt <- LSD.test(modelo_alt, "Tratamientos", group = TRUE, alpha = 0.05)
 LSD_alt
+  df_final <- data.frame(
+  Tratamiento = rownames(LSD_alt$groups),
+  Media = LSD_alt$groups$Altura,
+  Grupo = LSD_alt$groups$groups
+)
+kable(df_final, align = "c", col.names = c("Bioinsumo", "Altura Promedio (cm)", "Significancia")) %>%
+  kable_styling(position = "center")
 ```
 
 ### Andeva, diagnostico y parámetros del modelo para la variable número de hojas

@@ -1,6 +1,6 @@
 ---
-title: "Análisis de variables productivas"
-subtitle: "Número de vainas por plantas, número de granos por planta y rendimiento"
+title: "Resiliencia climática en Phaseolus vulgaris L. mediante el uso de microorganismos promotores del crecimiento en el Corredor Seco nicaragüense"
+subtitle: "Análisis de variables productivas: Número de vainas, Número de granos y rendimiento en kg por hectarea"
 author: "Víctor Hugo Rodríguez Salguera"
 date: last-modified
 lang: es 
@@ -38,15 +38,24 @@ library(cowplot)
 library(knitr)
 library(car)
 library(agricolae)
+library(kableExtra)
 ```
 
 ## Leyendo los datos
 
 ```{r}
 var_prod <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Productivas.csv")
-var_prod
 var_prod$Tratamiento <- as.factor(var_prod$Tratamiento)
 var_prod$Bloques <- as.factor(var_prod$Bloques)
+kable(var_prod, 
+      format = "html",
+      digits = 2, 
+      caption = "Marco de datos de las variables productivas",
+      col.names = c("Tratamiento", "Bloques", "Vainas por plantas", "Granos por planta", "Rendimiento (kg ha<sup>-1</sup>)"),
+      escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), 
+                full_width = F, 
+                position = "center")
 ```
 
 ## ANDEVA, comparación de medias, diagnóstico y parámetros del modelo para la variable número de vainas
@@ -259,9 +268,6 @@ graf_granos <- ggplot(data = df) +
               axis.title.y = element_text(face = "bold"))
 
 print(graf_granos) 
-
-
-
 
 graf_rend <- ggplot(data = df) +
         geom_col(aes(x = trt, y = Rendimiento),
