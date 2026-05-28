@@ -11,7 +11,8 @@ library(dplyr)
 library(gridExtra)
 library(grid)
 library(gtable)
-
+library(ggplotify)
+library(patchwork)
 #Leyendo los datos
 var_prod <- read.csv("C:/Analisis_inoculantes/Iniculantes/Datos/Var_Productivas.csv")
 
@@ -73,12 +74,30 @@ r2_granos <- round((anova_granos$'Sum Sq'[1]+anova_granos$'Sum Sq'[2]) / sum(ano
 r2_rend <- round((anova_rend$'Sum Sq'[1]+anova_rend$'Sum Sq'[2]) / sum(anova_rend$'Sum Sq'), 2)
 
 
-#Construyendo un marco de datos
-trt <- c(rownames(LSD_vainas$groups))
-letra_vainas <- c(LSD_vainas$groups)
-letra_granos <- c(LSD_granos$groups)
-letras_rend <- c(LSD_rend$groups)
-df <- data.frame(trt, letra_vainas, letra_granos, letras_rend)
+# ==============================================================================
+# CONSTRUYENDO UN MARCO DE DATOS (CORREGIDO)
+# ==============================================================================
+
+# 1. Extraer los resultados de cada variable manteniendo el nombre del tratamiento
+df_vainas <- LSD_vainas$groups %>% 
+        tibble::rownames_to_column(var = "trt") %>% 
+        rename(letra_vainas = groups) # Mantiene la media 'sqrt.Vainas_por_planta.' y su letra
+
+df_granos <- LSD_granos$groups %>% 
+        tibble::rownames_to_column(var = "trt") %>% 
+        select(trt, Granos_por_planta, letra_granos = groups)
+
+df_rend <- LSD_rend$groups %>% 
+        tibble::rownames_to_column(var = "trt") %>% 
+        select(trt, Rendimiento, letras_rend = groups)
+
+# 2. Unir de forma segura usando el nombre del tratamiento ('trt') como llave
+df <- df_vainas %>%
+        inner_join(df_granos, by = "trt") %>%
+        inner_join(df_rend, by = "trt")
+
+
+# --- El resto de tus vectores estadísticos se mantienen igual ---
 Co_Var <- c(cv_vainas, cv_granos, cv_rend)
 Coe_Det <- c(r2_vainas, r2_granos, r2_rend)
 Shapiro_Wilk <- c(sw_test_sqrt_vainas$p.value, sw_test_granos$p.value, sw_test_rend$p.value)
@@ -96,7 +115,6 @@ Variables <- c("Vainas por planta", "Granos por planta (Log)", "Rendimiento")
 df_stad <- data.frame(Variables, Co_Var, Coe_Det, Shapiro_Wilk, Levene, p_values)
 
 
-
 #Graficando los datos
 etiq_zz <- function(x) {
         ifelse(seq_along(x) %% 2 == 1,
@@ -107,9 +125,9 @@ etiq_zz <- function(x) {
 #Graficando Numero de vainas por planta
 
 graf_vainas <- ggplot(data = df) +
-        geom_col(aes(x = trt, y = sqrt.Vainas_por_planta.),
+        geom_col(aes(x = trt, y = `sqrt(Vainas_por_planta)`),
                  fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = sqrt.Vainas_por_planta., label = groups.1),
+        geom_text(aes(x = trt, y = `sqrt(Vainas_por_planta)`, label = letra_vainas),
                   vjust = -0.5,
                   size = 4,
                   fontface = "bold")+
@@ -133,7 +151,7 @@ print(graf_vainas)
 graf_granos <- ggplot(data = df) +
         geom_col(aes(x = trt, y = Granos_por_planta),
                  fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = Granos_por_planta, label = groups.1),
+        geom_text(aes(x = trt, y = Granos_por_planta, label = letra_granos),
                   vjust = -0.5,
                   size = 4,
                   fontface = "bold")+
@@ -157,7 +175,7 @@ print(graf_granos)
 graf_rend <- ggplot(data = df) +
         geom_col(aes(x = trt, y = Rendimiento),
                  fill = "#808080", width = 0.5) +
-        geom_text(aes(x = trt, y = Rendimiento, label = groups.2),
+        geom_text(aes(x = trt, y = Rendimiento, label = letras_rend),
                   vjust = -0.5,
                   size = 4,
                   fontface = "bold")+
@@ -275,10 +293,12 @@ graf_final <-
 
 #Nota al pie
 graf_final <- graf_final + plot_annotation(
+        tag_levels = "A",
         caption = "NOTA: Barras con letras diferentes corresponden a tratamientos estadísticamente distintos según la prueba LSD de Fisher (α = 0.05).",
         theme = theme(
                 plot.caption = element_text(size = 10, hjust = 0),  # hjust=0 = izquierda
                 plot.margin  = margin(t = 1, r = 2, b = 2, l = 2),
+                plot.tag     = element_text(size = 14, face = "bold"),
                 plot_annotation(theme = theme(plot.margin = margin(4, 4, 4, 4))) # margen externo# margen exterior opcional
         )
 )
@@ -295,3 +315,4 @@ ggsave(
         dpi      = 300,        
         device   = "png"
 )
+
